@@ -130,9 +130,10 @@
       hissLabel: document.getElementById('hissLabel'),
     };
 
+    const labelMap = { delayMs: 'delayLabel', wet: 'wetLabel', fb: 'fbLabel', hp: 'hpLabel', lp: 'lpLabel', hiss: 'hissLabel' };
     [delayEl,wetEl,fbEl,hpEl,lpEl,hissEl].forEach(inp=>{
-      const id = inp.id.replace(/[^a-z]/g,'') + 'Label';
-      inp.addEventListener('input', ()=> labels[id].textContent = inp.value);
+      const labelId = labelMap[inp.id];
+      inp.addEventListener('input', ()=> labels[labelId].textContent = inp.value);
     });
 
     let audioCtx, srcBuffer, previewNodes = [], noiseNode, stopPreviewFn = null;
@@ -143,8 +144,8 @@
       if (p === 'oldtv')    { hpEl.value=300; lpEl.value=3000; delayEl.value=65; wetEl.value=0.35; fbEl.value=0.10; hissEl.value=0.00; }
       if (p === 'oldtv_hiss'){hpEl.value=300; lpEl.value=3000; delayEl.value=65; wetEl.value=0.35; fbEl.value=0.10; hissEl.value=0.12; }
       [delayEl,wetEl,fbEl,hpEl,lpEl,hissEl].forEach(inp=>{
-        const id = inp.id.replace(/[^a-z]/g,'') + 'Label';
-        labels[id].textContent = inp.value;
+        const labelId = labelMap[inp.id];
+        labels[labelId].textContent = inp.value;
       });
     }
     presetEl.addEventListener('change', applyPresetDefaults);
