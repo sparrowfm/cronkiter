@@ -296,13 +296,17 @@
 
     <fieldset>
       <legend>Audio File</legend>
-      <input id="file" type="file" accept="audio/*" />
+      <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+        <input id="file" type="file" accept="audio/*" style="flex: 1; min-width: 200px;" />
+        <button id="loadSampleBtn" type="button" style="background: #10b981; flex-shrink: 0;">Load Sample Audio</button>
+      </div>
     </fieldset>
 
     <fieldset>
       <legend>Preset</legend>
     <div class="row">
       <select id="preset">
+        <option value="raw">Raw / No Processing</option>
         <option value="newsroom">Newsroom (subtle slapback)</option>
         <option value="oldtv">Old TV / AM Radio (mono, narrowband)</option>
         <option value="oldtv_hiss">Old TV + light hiss</option>
@@ -311,26 +315,26 @@
 
     <div class="row" style="margin-top:10px">
       <label style="margin-right:8px">Echo delay (ms)</label>
-      <input id="delayMs" type="range" min="20" max="140" step="1" value="90" />
-      <span id="delayLabel">90</span>
+      <input id="delayMs" type="range" min="20" max="140" step="1" value="20" />
+      <span id="delayLabel">20</span>
 
       <label style="margin-left:24px;margin-right:8px">Echo wet mix</label>
-      <input id="wet" type="range" min="0" max="1" step="0.01" value="0.15" />
-      <span id="wetLabel">0.15</span>
+      <input id="wet" type="range" min="0" max="1" step="0.01" value="0.00" />
+      <span id="wetLabel">0.00</span>
 
       <label style="margin-left:24px;margin-right:8px">Feedback</label>
-      <input id="fb" type="range" min="0" max="0.9" step="0.01" value="0.08" />
-      <span id="fbLabel">0.08</span>
+      <input id="fb" type="range" min="0" max="0.9" step="0.01" value="0.00" />
+      <span id="fbLabel">0.00</span>
     </div>
 
     <div class="row" style="margin-top:10px">
       <label style="margin-right:8px">High-pass (Hz)</label>
-      <input id="hp" type="range" min="20" max="800" step="10" value="100" />
-      <span id="hpLabel">100</span>
+      <input id="hp" type="range" min="20" max="800" step="10" value="20" />
+      <span id="hpLabel">20</span>
 
       <label style="margin-left:24px;margin-right:8px">Low-pass (Hz)</label>
-      <input id="lp" type="range" min="1000" max="8000" step="50" value="3500" />
-      <span id="lpLabel">3500</span>
+      <input id="lp" type="range" min="1000" max="8000" step="50" value="8000" />
+      <span id="lpLabel">8000</span>
     </div>
 
     <div class="row" style="margin-top:10px">
@@ -422,6 +426,7 @@
 
     function applyPresetDefaults() {
       const p = presetEl.value;
+      if (p === 'raw')      { hpEl.value=20; lpEl.value=8000; delayEl.value=20; wetEl.value=0.00; fbEl.value=0.00; hissEl.value=0.00; }
       if (p === 'newsroom') { hpEl.value=100; lpEl.value=3500; delayEl.value=90; wetEl.value=0.15; fbEl.value=0.08; hissEl.value=0.00; }
       if (p === 'oldtv')    { hpEl.value=300; lpEl.value=3000; delayEl.value=110; wetEl.value=0.38; fbEl.value=0.18; hissEl.value=0.00; }
       if (p === 'oldtv_hiss'){hpEl.value=300; lpEl.value=3000; delayEl.value=110; wetEl.value=0.38; fbEl.value=0.18; hissEl.value=0.10; }
@@ -432,6 +437,27 @@
     }
     presetEl.addEventListener('change', applyPresetDefaults);
     applyPresetDefaults();
+
+    // Load sample audio
+    document.getElementById('loadSampleBtn').addEventListener('click', async () => {
+      try {
+        const response = await fetch('sample.mp3');
+        const arrayBuffer = await response.arrayBuffer();
+        audioCtx?.close();
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        srcBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+        document.getElementById('previewBtn').disabled = false;
+        document.getElementById('renderBtn').disabled = false;
+        // Update file input to show sample loaded
+        const fileInput = document.getElementById('file');
+        const dt = new DataTransfer();
+        fileInput.files = dt.files; // Clear file input visually
+        console.log('Sample audio loaded successfully');
+      } catch (error) {
+        console.error('Failed to load sample audio:', error);
+        alert('Failed to load sample audio. Please try uploading a file instead.');
+      }
+    });
 
     fileEl.addEventListener('change', async () => {
       if (!fileEl.files[0]) return;
