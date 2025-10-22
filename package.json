@@ -1,0 +1,27 @@
+{
+  "name": "edward-r-mur-wren",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test-full-suite.js",
+    "test:upload": "node test-with-upload.js",
+    "test:e2e": "node serve-and-test.js",
+    "test:all": "npm run test:upload && npm run test:e2e"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sparrowfm/edward-r-mur-wren.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sparrowfm/edward-r-mur-wren/issues"
+  },
+  "homepage": "https://github.com/sparrowfm/edward-r-mur-wren#readme",
+  "dependencies": {
+    "puppeteer": "^24.26.0"
+  }
+}
