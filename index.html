@@ -36,32 +36,32 @@
 
     <div class="row" style="margin-top:10px">
       <label style="margin-right:8px">Echo delay (ms)</label>
-      <input id="delayMs" type="range" min="20" max="140" step="1" value="65" />
-      <span id="delayLabel">65</span>
+      <input id="delayMs" type="range" min="20" max="140" step="1" value="90" />
+      <span id="delayLabel">90</span>
 
       <label style="margin-left:24px;margin-right:8px">Echo wet mix</label>
-      <input id="wet" type="range" min="0" max="1" step="0.01" value="0.35" />
-      <span id="wetLabel">0.35</span>
+      <input id="wet" type="range" min="0" max="1" step="0.01" value="0.15" />
+      <span id="wetLabel">0.15</span>
 
       <label style="margin-left:24px;margin-right:8px">Feedback</label>
-      <input id="fb" type="range" min="0" max="0.9" step="0.01" value="0.10" />
-      <span id="fbLabel">0.10</span>
+      <input id="fb" type="range" min="0" max="0.9" step="0.01" value="0.08" />
+      <span id="fbLabel">0.08</span>
     </div>
 
     <div class="row" style="margin-top:10px">
       <label style="margin-right:8px">High-pass (Hz)</label>
-      <input id="hp" type="range" min="20" max="800" step="10" value="300" />
-      <span id="hpLabel">300</span>
+      <input id="hp" type="range" min="20" max="800" step="10" value="100" />
+      <span id="hpLabel">100</span>
 
       <label style="margin-left:24px;margin-right:8px">Low-pass (Hz)</label>
-      <input id="lp" type="range" min="1000" max="8000" step="50" value="3000" />
-      <span id="lpLabel">3000</span>
+      <input id="lp" type="range" min="1000" max="8000" step="50" value="3500" />
+      <span id="lpLabel">3500</span>
     </div>
 
     <div class="row" style="margin-top:10px">
       <label style="margin-right:8px">Hiss level</label>
-      <input id="hiss" type="range" min="0" max="0.3" step="0.01" value="0.12" />
-      <span id="hissLabel">0.12</span>
+      <input id="hiss" type="range" min="0" max="0.3" step="0.01" value="0.00" />
+      <span id="hissLabel">0.00</span>
       <span class="muted">(only used by "Old TV + hiss")</span>
     </div>
   </fieldset>
@@ -140,9 +140,9 @@
 
     function applyPresetDefaults() {
       const p = presetEl.value;
-      if (p === 'newsroom') { hpEl.value=200; lpEl.value=4500; delayEl.value=60; wetEl.value=0.22; fbEl.value=0.10; hissEl.value=0.00; }
-      if (p === 'oldtv')    { hpEl.value=300; lpEl.value=3000; delayEl.value=65; wetEl.value=0.35; fbEl.value=0.10; hissEl.value=0.00; }
-      if (p === 'oldtv_hiss'){hpEl.value=300; lpEl.value=3000; delayEl.value=65; wetEl.value=0.35; fbEl.value=0.10; hissEl.value=0.12; }
+      if (p === 'newsroom') { hpEl.value=100; lpEl.value=3500; delayEl.value=90; wetEl.value=0.15; fbEl.value=0.08; hissEl.value=0.00; }
+      if (p === 'oldtv')    { hpEl.value=300; lpEl.value=3000; delayEl.value=110; wetEl.value=0.38; fbEl.value=0.18; hissEl.value=0.00; }
+      if (p === 'oldtv_hiss'){hpEl.value=300; lpEl.value=3000; delayEl.value=110; wetEl.value=0.38; fbEl.value=0.18; hissEl.value=0.10; }
       [delayEl,wetEl,fbEl,hpEl,lpEl,hissEl].forEach(inp=>{
         const labelId = labelMap[inp.id];
         labels[labelId].textContent = inp.value;
