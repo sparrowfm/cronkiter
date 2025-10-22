@@ -225,93 +225,64 @@
       text-align: right;
     }
 
+    /* Mobile message */
+    .mobile-message {
+      display: none;
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .mobile-message h2 {
+      font-size: 1.5em;
+      margin-bottom: 16px;
+      color: #1e293b;
+    }
+    .mobile-message p {
+      color: #64748b;
+      font-size: 1.1em;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+    .mobile-message .icon {
+      font-size: 4em;
+      margin-bottom: 20px;
+    }
+
     /* Mobile responsiveness */
     @media (max-width: 768px) {
       body {
         padding: 20px 12px;
       }
-      .container {
-        padding: 24px 20px;
+      .mobile-message {
+        display: block;
       }
-      .branding h1 {
-        font-size: 1.8em;
-      }
-      .branding h1::before,
-      .branding h1::after {
-        margin: 0 8px;
-      }
-      .tagline {
-        font-size: 1em;
-      }
-      .vintage-badge {
-        font-size: 0.7em;
-        padding: 3px 12px;
-      }
-      .subtitle {
-        font-size: 0.95em;
-      }
-      fieldset {
-        padding: 16px;
-      }
-      .row {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-      }
-      .slider-group {
-        width: 100%;
-        min-width: unset;
-      }
-      .slider-group label {
-        min-width: unset;
-        width: 100%;
-        margin-bottom: 4px;
-      }
-      .slider-group input[type="range"] {
-        width: 100%;
-        max-width: none;
-      }
-      button {
-        width: 100%;
-        padding: 14px 24px;
-        font-size: 1em;
-      }
-      .controls {
-        width: 100%;
-      }
-      .controls button {
-        flex: 1;
-        min-width: 80px;
-      }
-      select {
-        width: 100%;
-      }
-    }
-
-    /* Touch-friendly sizing */
-    @media (hover: none) and (pointer: coarse) {
-      button {
-        min-height: 44px;
-      }
-      input[type="range"]::-webkit-slider-thumb {
-        width: 24px;
-        height: 24px;
-      }
-      input[type="range"]::-moz-range-thumb {
-        width: 24px;
-        height: 24px;
+      .main-content {
+        display: none;
       }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="branding">
-      <h1>Edward R. Mur-Wren</h1>
-      <p class="tagline">"Good night, and good chirp."</p>
-      <div class="vintage-badge">Broadcast Audio Tool</div>
+    <div class="mobile-message">
+      <div class="icon">🖥️</div>
+      <h2>Desktop Required</h2>
+      <p>This broadcast audio tool works best on desktop browsers.</p>
+      <p>Please visit this page on your computer for the full experience.</p>
+      <div style="margin-top: 32px; padding: 20px; background: #f8fafc; border-radius: 12px;">
+        <p style="font-size: 0.9em; color: #64748b; margin: 0;">
+          <strong>Edward R. Mur-Wren</strong><br>
+          "Good night, and good chirp."
+        </p>
+      </div>
     </div>
-    <p class="subtitle">Drop a voice file → choose a preset → Preview → Render WAV. Everything stays in your browser.</p>
+
+    <div class="main-content">
+      <div class="branding">
+        <h1>Edward R. Mur-Wren</h1>
+        <p class="tagline">"Good night, and good chirp."</p>
+        <div class="vintage-badge">Broadcast Audio Tool</div>
+      </div>
+      <p class="subtitle">Drop a voice file → choose a preset → Preview → Render WAV. Everything stays in your browser.</p>
 
     <fieldset>
       <legend>Audio File</legend>
@@ -382,11 +353,12 @@
       <a id="dl"></a>
     </div>
 
-    <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; color: #94a3b8; font-size: 0.9em;">
-      <a href="https://github.com/sparrowfm/edward-r-mur-wren" target="_blank" style="color: #667eea; text-decoration: none; font-weight: 500;">View on GitHub</a>
-      <span style="margin: 0 8px;">•</span>
-      <span>Good night, and good chirp. 🎙️</span>
-    </footer>
+      <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; color: #94a3b8; font-size: 0.9em;">
+        <a href="https://github.com/sparrowfm/edward-r-mur-wren" target="_blank" style="color: #667eea; text-decoration: none; font-weight: 500;">View on GitHub</a>
+        <span style="margin: 0 8px;">•</span>
+        <span>Good night, and good chirp. 🎙️</span>
+      </footer>
+    </div><!-- end main-content -->
   </div>
 
   <script>
