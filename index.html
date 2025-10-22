@@ -580,8 +580,16 @@
       return { src, out, nodes, hissSrc };
     }
 
-    function startPreview() {
+    async function startPreview() {
       if (!audioCtx || !srcBuffer) return;
+
+      // Resume AudioContext for mobile Safari
+      console.log('AudioContext state before resume:', audioCtx.state);
+      if (audioCtx.state === 'suspended') {
+        await audioCtx.resume();
+        console.log('AudioContext resumed, new state:', audioCtx.state);
+      }
+
       stopPreview();
       const params = currentParams();
       const graph = buildGraph(audioCtx, srcBuffer, params);
@@ -605,6 +613,12 @@
 
     async function renderWav(){
       if (!srcBuffer) return;
+
+      // Resume AudioContext for mobile Safari (if needed for future operations)
+      if (audioCtx && audioCtx.state === 'suspended') {
+        await audioCtx.resume();
+      }
+
       stopPreview();
 
       const params = currentParams();
