@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Broadcast / Old TV Voice (Client-Only)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 24px; line-height: 1.4; }
+    fieldset { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 20px; }
+    label { display:block; margin: 8px 0 4px; font-weight: 600; }
+    .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+    button { padding:10px 14px; border-radius:8px; border:1px solid #ccc; background:#f7f7f7; cursor:pointer; }
+    button:disabled{opacity:.6; cursor:not-allowed;}
+    input[type="range"] { width: 220px; }
+    .muted { color:#666; font-size: 0.92em; }
+  </style>
+</head>
+<body>
+  <h1>Broadcast / Old TV Voice (Client-Only)</h1>
+  <p class="muted">Drop a voice file → choose a preset → Preview → Render WAV. Everything stays in your browser.</p>
+
+  <fieldset>
+    <label>Audio file</label>
+    <input id="file" type="file" accept="audio/*" />
+  </fieldset>
+
+  <fieldset>
+    <label>Preset</label>
+    <div class="row">
+      <select id="preset">
+        <option value="newsroom">Newsroom (subtle slapback)</option>
+        <option value="oldtv">Old TV / AM Radio (mono, narrowband)</option>
+        <option value="oldtv_hiss">Old TV + light hiss</option>
+      </select>
+    </div>
+
+    <div class="row" style="margin-top:10px">
+      <label style="margin-right:8px">Echo delay (ms)</label>
+      <input id="delayMs" type="range" min="20" max="140" step="1" value="65" />
+      <span id="delayLabel">65</span>
+
+      <label style="margin-left:24px;margin-right:8px">Echo wet mix</label>
+      <input id="wet" type="range" min="0" max="1" step="0.01" value="0.35" />
+      <span id="wetLabel">0.35</span>
+
+      <label style="margin-left:24px;margin-right:8px">Feedback</label>
+      <input id="fb" type="range" min="0" max="0.9" step="0.01" value="0.10" />
+      <span id="fbLabel">0.10</span>
+    </div>
+
+    <div class="row" style="margin-top:10px">
+      <label style="margin-right:8px">High-pass (Hz)</label>
+      <input id="hp" type="range" min="20" max="800" step="10" value="300" />
+      <span id="hpLabel">300</span>
+
+      <label style="margin-left:24px;margin-right:8px">Low-pass (Hz)</label>
+      <input id="lp" type="range" min="1000" max="8000" step="50" value="3000" />
+      <span id="lpLabel">3000</span>
+    </div>
+
+    <div class="row" style="margin-top:10px">
+      <label style="margin-right:8px">Hiss level</label>
+      <input id="hiss" type="range" min="0" max="0.3" step="0.01" value="0.12" />
+      <span id="hissLabel">0.12</span>
+      <span class="muted">(only used by "Old TV + hiss")</span>
+    </div>
+  </fieldset>
+
+  <div class="row">
+    <button id="previewBtn" disabled>▶︎ Preview</button>
+    <button id="stopBtn" disabled>■ Stop</button>
+    <button id="renderBtn" disabled>⤓ Render WAV</button>
+    <a id="dl" style="margin-left:12px"></a>
+  </div>
+
+  <script>
+    // --- Small helper: write a WAV file from an AudioBuffer (16-bit PCM, little-endian)
+    function audioBufferToWavBlob(buffer) {
+      const numCh = buffer.numberOfChannels;
+      const sampleRate = buffer.sampleRate;
+      const numFrames = buffer.length;
+      const bytesPerSample = 2;
+      const blockAlign = numCh * bytesPerSample;
+      const dataSize = numFrames * blockAlign;
+      const bufferSize = 44 + dataSize;
+      const ab = new ArrayBuffer(bufferSize);
+      const dv = new DataView(ab);
+      let offset = 0;
+
+      function writeString(s) { for (let i=0; i<s.length; i++) dv.setUint8(offset++, s.charCodeAt(i)); }
+      function writeUint32(v){ dv.setUint32(offset, v, true); offset += 4; }
+      function writeUint16(v){ dv.setUint16(offset, v, true); offset += 2; }
+
+      writeString('RIFF'); writeUint32(36 + dataSize); writeString('WAVE');
+      writeString('fmt '); writeUint32(16); writeUint16(1); // PCM
+      writeUint16(numCh); writeUint32(sampleRate); writeUint32(sampleRate * blockAlign);
+      writeUint16(blockAlign); writeUint16(16);
+      writeString('data'); writeUint32(dataSize);
+
+      // interleave & convert
+      const channels = [];
+      for (let ch=0; ch<numCh; ch++) channels.push(buffer.getChannelData(ch));
+      for (let i=0; i<numFrames; i++){
+        for (let ch=0; ch<numCh; ch++){
+          let sample = Math.max(-1, Math.min(1, channels[ch][i]));
+          sample = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+          dv.setInt16(offset, sample, true);
+          offset += 2;
+        }
+      }
+      return new Blob([ab], {type: 'audio/wav'});
+    }
+
+    // --- UI elements
+    const fileEl = document.getElementById('file');
+    const presetEl = document.getElementById('preset');
+    const delayEl = document.getElementById('delayMs');
+    const wetEl = document.getElementById('wet');
+    const fbEl = document.getElementById('fb');
+    const hpEl = document.getElementById('hp');
+    const lpEl = document.getElementById('lp');
+    const hissEl = document.getElementById('hiss');
+
+    const labels = {
+      delayLabel: document.getElementById('delayLabel'),
+      wetLabel: document.getElementById('wetLabel'),
+      fbLabel: document.getElementById('fbLabel'),
+      hpLabel: document.getElementById('hpLabel'),
+      lpLabel: document.getElementById('lpLabel'),
+      hissLabel: document.getElementById('hissLabel'),
+    };
+
+    [delayEl,wetEl,fbEl,hpEl,lpEl,hissEl].forEach(inp=>{
+      const id = inp.id.replace(/[^a-z]/g,'') + 'Label';
+      inp.addEventListener('input', ()=> labels[id].textContent = inp.value);
+    });
+
+    let audioCtx, srcBuffer, previewNodes = [], noiseNode, stopPreviewFn = null;
+
+    function applyPresetDefaults() {
+      const p = presetEl.value;
+      if (p === 'newsroom') { hpEl.value=200; lpEl.value=4500; delayEl.value=60; wetEl.value=0.22; fbEl.value=0.10; hissEl.value=0.00; }
+      if (p === 'oldtv')    { hpEl.value=300; lpEl.value=3000; delayEl.value=65; wetEl.value=0.35; fbEl.value=0.10; hissEl.value=0.00; }
+      if (p === 'oldtv_hiss'){hpEl.value=300; lpEl.value=3000; delayEl.value=65; wetEl.value=0.35; fbEl.value=0.10; hissEl.value=0.12; }
+      [delayEl,wetEl,fbEl,hpEl,lpEl,hissEl].forEach(inp=>{
+        const id = inp.id.replace(/[^a-z]/g,'') + 'Label';
+        labels[id].textContent = inp.value;
+      });
+    }
+    presetEl.addEventListener('change', applyPresetDefaults);
+    applyPresetDefaults();
+
+    fileEl.addEventListener('change', async () => {
+      if (!fileEl.files[0]) return;
+      const arr = await fileEl.files[0].arrayBuffer();
+      audioCtx?.close();
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      srcBuffer = await audioCtx.decodeAudioData(arr.slice(0));
+      document.getElementById('previewBtn').disabled = false;
+      document.getElementById('renderBtn').disabled = false;
+    });
+
+    function buildGraph(ctx, buffer, {hpHz, lpHz, delayMs, wet, feedback, makeMono, addHiss, hissLevel}) {
+      const nodes = [];
+
+      // source
+      const src = new AudioBufferSourceNode(ctx, { buffer });
+      nodes.push(src);
+
+      // optional mono fold-down (pre-filter)
+      let head = src;
+      if (makeMono && buffer.numberOfChannels > 1) {
+        const splitter = new ChannelSplitterNode(ctx, { numberOfOutputs: 2 });
+        const gL = new GainNode(ctx, { gain: 0.5 });
+        const gR = new GainNode(ctx, { gain: 0.5 });
+        const merger = new ChannelMergerNode(ctx, { numberOfInputs: 2 });
+        head.connect(splitter);
+        splitter.connect(gL, 0);
+        splitter.connect(gR, 1);
+        gL.connect(merger, 0, 0);
+        gR.connect(merger, 0, 0); // sum to one channel
+        // dual-mono out
+        const dupe = new ChannelMergerNode(ctx, { numberOfInputs: 2 });
+        merger.connect(dupe, 0, 0);
+        merger.connect(dupe, 0, 1);
+        head = dupe;
+        nodes.push(splitter,gL,gR,merger,dupe);
+      }
+
+      // band-limit
+      const hp = new BiquadFilterNode(ctx, { type: 'highpass', frequency: hpHz, Q: 0.707 });
+      const lp = new BiquadFilterNode(ctx, { type: 'lowpass',  frequency: lpHz, Q: 0.707 });
+      head.connect(hp); hp.connect(lp);
+      nodes.push(hp, lp);
+      head = lp;
+
+      // compressor to tame peaks (broadcast-ish)
+      const comp = new DynamicsCompressorNode(ctx, {
+        threshold: -18, knee: 6, ratio: 3.5, attack: 0.003, release: 0.25
+      });
+      head.connect(comp);
+      nodes.push(comp);
+      head = comp;
+
+      // create dry/wet paths with feedback delay
+      const out = new GainNode(ctx, { gain: 1.0 }); nodes.push(out);
+
+      const dry = new GainNode(ctx, { gain: 1.0 }); head.connect(dry); dry.connect(out); nodes.push(dry);
+      const wetIn = new GainNode(ctx, { gain: 1.0 }); head.connect(wetIn); nodes.push(wetIn);
+      const delay = new DelayNode(ctx, { delayTime: delayMs / 1000 });
+      const fb = new GainNode(ctx, { gain: feedback });
+      const wetGain = new GainNode(ctx, { gain: wet });
+      // feedback loop
+      wetIn.connect(delay); delay.connect(fb); fb.connect(delay);
+      delay.connect(wetGain); wetGain.connect(out);
+      nodes.push(delay, fb, wetGain);
+
+      // optional hiss (white noise)
+      let hissSrc = null;
+      if (addHiss && hissLevel > 0) {
+        const dur = buffer.duration + 1.0;
+        const noiseBuf = ctx.createBuffer(1, Math.ceil(dur*ctx.sampleRate), ctx.sampleRate);
+        const data = noiseBuf.getChannelData(0);
+        for (let i=0;i<data.length;i++) data[i] = (Math.random()*2 - 1) * hissLevel;
+        hissSrc = new AudioBufferSourceNode(ctx, { buffer: noiseBuf, loop: false });
+        hissSrc.connect(out);
+      }
+
+      return { src, out, nodes, hissSrc };
+    }
+
+    function startPreview() {
+      if (!audioCtx || !srcBuffer) return;
+      stopPreview();
+      const params = currentParams();
+      const graph = buildGraph(audioCtx, srcBuffer, params);
+      graph.out.connect(audioCtx.destination);
+      graph.src.start();
+      if (graph.hissSrc) graph.hissSrc.start();
+      previewNodes = graph.nodes;
+      stopPreviewFn = () => {
+        try { graph.src.stop(); } catch(_) {}
+        try { graph.hissSrc && graph.hissSrc.stop(); } catch(_) {}
+        previewNodes.forEach(n => { try { n.disconnect(); } catch(_) {} });
+        previewNodes = []; stopPreviewFn = null;
+      };
+      document.getElementById('stopBtn').disabled = false;
+    }
+
+    function stopPreview(){
+      if (stopPreviewFn) stopPreviewFn();
+      document.getElementById('stopBtn').disabled = true;
+    }
+
+    async function renderWav(){
+      if (!srcBuffer) return;
+      stopPreview();
+
+      const params = currentParams();
+      const nCh = srcBuffer.numberOfChannels;
+      const sampleRate = srcBuffer.sampleRate;
+      const offline = new OfflineAudioContext(nCh, srcBuffer.length, sampleRate);
+
+      const g = buildGraph(offline, srcBuffer, params);
+      g.out.connect(offline.destination);
+      g.src.start(0);
+      if (g.hissSrc) g.hissSrc.start(0);
+
+      const rendered = await offline.startRendering();
+      const blob = audioBufferToWavBlob(rendered);
+      const url = URL.createObjectURL(blob);
+      const a = document.getElementById('dl');
+      a.href = url; a.download = `broadcast_${presetEl.value}.wav`;
+      a.textContent = 'Download WAV';
+    }
+
+    function currentParams(){
+      return {
+        hpHz: parseFloat(hpEl.value),
+        lpHz: parseFloat(lpEl.value),
+        delayMs: parseFloat(delayEl.value),
+        wet: parseFloat(wetEl.value),
+        feedback: parseFloat(fbEl.value),
+        makeMono: presetEl.value !== 'newsroom',
+        addHiss: presetEl.value === 'oldtv_hiss',
+        hissLevel: parseFloat(hissEl.value)
+      };
+    }
+
+    document.getElementById('previewBtn').addEventListener('click', startPreview);
+    document.getElementById('stopBtn').addEventListener('click', stopPreview);
+    document.getElementById('renderBtn').addEventListener('click', renderWav);
+  </script>
+</body>
+</html>
