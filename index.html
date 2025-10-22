@@ -23,19 +23,53 @@
       padding: 40px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.3);
     }
-    h1 {
-      margin: 0 0 8px 0;
-      font-size: 2em;
-      font-weight: 700;
+    .branding {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 32px;
+      border-bottom: 3px double #e2e8f0;
+    }
+    .branding h1 {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 2.5em;
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      margin: 0 0 12px 0;
+      color: #1e293b;
+      text-transform: uppercase;
+      position: relative;
+    }
+    .branding h1::before,
+    .branding h1::after {
+      content: '◆';
+      color: #667eea;
+      margin: 0 16px;
+      font-size: 0.6em;
+    }
+    .tagline {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-style: italic;
+      color: #667eea;
+      font-size: 1.1em;
+      margin: 8px 0 0 0;
+    }
+    .vintage-badge {
+      display: inline-block;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: white;
+      padding: 4px 16px;
+      border-radius: 20px;
+      font-size: 0.75em;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 12px;
     }
     .subtitle {
       color: #64748b;
       font-size: 1.05em;
       margin: 0 0 32px 0;
+      text-align: center;
     }
     fieldset {
       border: none;
@@ -181,7 +215,11 @@
 </head>
 <body>
   <div class="container">
-    <h1>Broadcast / Old TV Voice</h1>
+    <div class="branding">
+      <h1>Edward R. Mur-Wren</h1>
+      <p class="tagline">"Good night, and good chirp."</p>
+      <div class="vintage-badge">Broadcast Audio Tool</div>
+    </div>
     <p class="subtitle">Drop a voice file → choose a preset → Preview → Render WAV. Everything stays in your browser.</p>
 
     <fieldset>
