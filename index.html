@@ -2,9 +2,81 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Cronkiter</title>
+
+  <!-- Primary Meta Tags -->
+  <title>Cronkiter - Free Vintage Audio Transformer | Make Audio Sound Old-Timey</title>
+  <meta name="title" content="Cronkiter - Free Vintage Audio Transformer | Make Audio Sound Old-Timey" />
+  <meta name="description" content="Transform your audio into nostalgic, old-timey broadcasts for free! Make any recording sound like it's crackling through a 1940s radio or vintage TV. No uploads, runs in your browser." />
+  <meta name="keywords" content="vintage audio, old radio sound, audio transformer, retro audio effect, broadcast audio, 1940s radio, AM radio sound, audio processing, free audio tool, browser audio editor, vintage sound effect, old timey audio, nostalgia audio, radio effect" />
+  <meta name="author" content="sparrowfm" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://sparrowfm.github.io/cronkiter/" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://sparrowfm.github.io/cronkiter/" />
+  <meta property="og:title" content="Cronkiter - Free Vintage Audio Transformer" />
+  <meta property="og:description" content="Transform your audio into nostalgic, old-timey broadcasts! Make recordings sound like 1940s radio or vintage TV. Free, runs in your browser, no uploads required." />
+  <meta property="og:image" content="https://sparrowfm.github.io/cronkiter/og-image.png" />
+  <meta property="og:site_name" content="Cronkiter" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://sparrowfm.github.io/cronkiter/" />
+  <meta name="twitter:title" content="Cronkiter - Free Vintage Audio Transformer" />
+  <meta name="twitter:description" content="Transform your audio into nostalgic, old-timey broadcasts! Make recordings sound like 1940s radio or vintage TV. Free browser tool." />
+  <meta name="twitter:image" content="https://sparrowfm.github.io/cronkiter/og-image.png" />
+
+  <!-- Additional SEO -->
+  <meta name="robots" content="index, follow" />
+  <meta name="language" content="English" />
+  <meta name="revisit-after" content="7 days" />
+  <meta name="theme-color" content="#667eea" />
+
+  <!-- Favicon -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23667eea'/><stop offset='100%' style='stop-color:%23764ba2'/></linearGradient></defs><rect x='35' y='20' width='30' height='40' rx='15' fill='url(%23g)'/><rect x='42' y='60' width='16' height='8' fill='url(%23g)'/><rect x='30' y='68' width='40' height='4' rx='2' fill='url(%23g)'/><circle cx='44' cy='35' r='3' fill='white' opacity='0.6'/><circle cx='56' cy='35' r='3' fill='white' opacity='0.6'/><path d='M 35 45 Q 50 50 65 45' stroke='white' stroke-width='2' fill='none' opacity='0.6'/></svg>" />
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Cronkiter",
+    "description": "Free vintage audio transformer that makes recordings sound like old-timey broadcasts from 1940s radio or vintage TV",
+    "url": "https://sparrowfm.github.io/cronkiter/",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Any (Web-based)",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "sparrowfm",
+      "url": "https://github.com/sparrowfm"
+    },
+    "featureList": [
+      "Vintage audio presets (Newsroom, Old TV, AM Radio)",
+      "Real-time audio preview",
+      "WAV file export",
+      "Browser-based processing (no uploads)",
+      "Manual audio parameter controls",
+      "Echo and feedback effects",
+      "High-pass and low-pass filters",
+      "Vintage hiss generator"
+    ],
+    "screenshot": "https://sparrowfm.github.io/cronkiter/og-image.png",
+    "softwareVersion": "1.0",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5.0",
+      "ratingCount": "1"
+    }
+  }
+  </script>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -31,20 +103,18 @@
     }
     .branding h1 {
       font-family: Georgia, 'Times New Roman', serif;
-      font-size: 2.5em;
+      font-size: 2em;
       font-weight: 400;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.02em;
       margin: 0 0 12px 0;
       color: #1e293b;
-      text-transform: uppercase;
       position: relative;
+      line-height: 1.3;
     }
-    .branding h1::before,
-    .branding h1::after {
-      content: '◆';
-      color: #667eea;
-      margin: 0 16px;
-      font-size: 0.6em;
+    @media (min-width: 600px) {
+      .branding h1 {
+        font-size: 2.5em;
+      }
     }
     .tagline {
       font-family: Georgia, 'Times New Roman', serif;
@@ -262,8 +332,8 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="mobile-message">
+  <main class="container">
+    <aside class="mobile-message" aria-label="Desktop required notice">
       <div class="icon">🖥️</div>
       <h2>Desktop Required</h2>
       <p>This vintage audio transformer works best on desktop browsers with full audio processing capabilities.</p>
@@ -274,14 +344,14 @@
           "And that's the way it sounds."
         </p>
       </div>
-    </div>
+    </aside>
 
-    <div class="main-content">
-      <div class="branding">
-        <h1>Cronkiter</h1>
+    <article class="main-content">
+      <header class="branding">
+        <h1>Cronkiter - Free Vintage Audio Transformer</h1>
         <p class="tagline">"And that's the way it sounds."</p>
         <div class="vintage-badge">Vintage Audio Transformer</div>
-      </div>
+      </header>
       <p class="subtitle">Transform your audio into nostalgic, old-timey broadcasts! Make any recording sound like it's crackling through a 1940s radio or vintage TV set. Everything runs free in your browser—no uploads, no accounts, just pure retro charm.</p>
 
     <fieldset>
@@ -363,8 +433,8 @@
           And that's the way it sounds. 🎙️
         </div>
       </footer>
-    </div><!-- end main-content -->
-  </div>
+    </article><!-- end main-content -->
+  </main>
 
   <script>
     // --- Small helper: write a WAV file from an AudioBuffer (16-bit PCM, little-endian)
