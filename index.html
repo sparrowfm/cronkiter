@@ -2,30 +2,195 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Broadcast / Old TV Voice (Client-Only)</title>
+  <title>Edward R. Mur-Wren</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23667eea'/><stop offset='100%' style='stop-color:%23764ba2'/></linearGradient></defs><rect x='35' y='20' width='30' height='40' rx='15' fill='url(%23g)'/><rect x='42' y='60' width='16' height='8' fill='url(%23g)'/><rect x='30' y='68' width='40' height='4' rx='2' fill='url(%23g)'/><circle cx='44' cy='35' r='3' fill='white' opacity='0.6'/><circle cx='56' cy='35' r='3' fill='white' opacity='0.6'/><path d='M 35 45 Q 50 50 65 45' stroke='white' stroke-width='2' fill='none' opacity='0.6'/></svg>" />
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 24px; line-height: 1.4; }
-    fieldset { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 20px; }
-    label { display:block; margin: 8px 0 4px; font-weight: 600; }
-    .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
-    button { padding:10px 14px; border-radius:8px; border:1px solid #ccc; background:#f7f7f7; cursor:pointer; }
-    button:disabled{opacity:.6; cursor:not-allowed;}
-    input[type="range"] { width: 220px; }
-    .muted { color:#666; font-size: 0.92em; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      margin: 0;
+      padding: 40px 20px;
+      line-height: 1.6;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      margin: 0 0 8px 0;
+      font-size: 2em;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .subtitle {
+      color: #64748b;
+      font-size: 1.05em;
+      margin: 0 0 32px 0;
+    }
+    fieldset {
+      border: none;
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    fieldset legend {
+      font-weight: 600;
+      font-size: 1.1em;
+      color: #1e293b;
+      padding: 0 8px;
+    }
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-weight: 500;
+      color: #475569;
+      font-size: 0.9em;
+    }
+    .row {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    select {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: 2px solid #e2e8f0;
+      background: white;
+      font-size: 1em;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    select:hover {
+      border-color: #667eea;
+    }
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    button {
+      padding: 12px 24px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 1em;
+    }
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+    button:active:not(:disabled) {
+      transform: translateY(0);
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+    input[type="range"] {
+      width: 200px;
+      height: 6px;
+      border-radius: 3px;
+      background: #e2e8f0;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    input[type="range"]::-moz-range-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    input[type="file"] {
+      padding: 10px;
+      border: 2px dashed #e2e8f0;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.2s;
+    }
+    input[type="file"]:hover {
+      border-color: #667eea;
+      background: #f8fafc;
+    }
+    .muted {
+      color: #94a3b8;
+      font-size: 0.9em;
+    }
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+    a#dl {
+      color: #667eea;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    a#dl:hover {
+      color: #764ba2;
+      text-decoration: underline;
+    }
+    span[id$="Label"] {
+      font-weight: 600;
+      color: #1e293b;
+      min-width: 45px;
+      text-align: right;
+    }
   </style>
 </head>
 <body>
-  <h1>Broadcast / Old TV Voice (Client-Only)</h1>
-  <p class="muted">Drop a voice file → choose a preset → Preview → Render WAV. Everything stays in your browser.</p>
+  <div class="container">
+    <h1>Broadcast / Old TV Voice</h1>
+    <p class="subtitle">Drop a voice file → choose a preset → Preview → Render WAV. Everything stays in your browser.</p>
 
-  <fieldset>
-    <label>Audio file</label>
-    <input id="file" type="file" accept="audio/*" />
-  </fieldset>
+    <fieldset>
+      <legend>Audio File</legend>
+      <input id="file" type="file" accept="audio/*" />
+    </fieldset>
 
-  <fieldset>
-    <label>Preset</label>
+    <fieldset>
+      <legend>Preset</legend>
     <div class="row">
       <select id="preset">
         <option value="newsroom">Newsroom (subtle slapback)</option>
@@ -66,11 +231,18 @@
     </div>
   </fieldset>
 
-  <div class="row">
-    <button id="previewBtn" disabled>▶︎ Preview</button>
-    <button id="stopBtn" disabled>■ Stop</button>
-    <button id="renderBtn" disabled>⤓ Render WAV</button>
-    <a id="dl" style="margin-left:12px"></a>
+    <div class="controls">
+      <button id="previewBtn" disabled>▶︎ Preview</button>
+      <button id="stopBtn" disabled>■ Stop</button>
+      <button id="renderBtn" disabled>⤓ Render WAV</button>
+      <a id="dl"></a>
+    </div>
+
+    <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; text-align: center; color: #94a3b8; font-size: 0.9em;">
+      <a href="https://github.com/sparrowfm/edward-r-mur-wren" target="_blank" style="color: #667eea; text-decoration: none; font-weight: 500;">View on GitHub</a>
+      <span style="margin: 0 8px;">•</span>
+      <span>Good night, and good chirp. 🎙️</span>
+    </footer>
   </div>
 
   <script>
