@@ -211,6 +211,78 @@
       min-width: 45px;
       text-align: right;
     }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      body {
+        padding: 20px 12px;
+      }
+      .container {
+        padding: 24px 20px;
+      }
+      .branding h1 {
+        font-size: 1.8em;
+      }
+      .branding h1::before,
+      .branding h1::after {
+        margin: 0 8px;
+      }
+      .tagline {
+        font-size: 1em;
+      }
+      .vintage-badge {
+        font-size: 0.7em;
+        padding: 3px 12px;
+      }
+      .subtitle {
+        font-size: 0.95em;
+      }
+      fieldset {
+        padding: 16px;
+      }
+      .row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      .row label {
+        margin: 8px 0 4px 0;
+      }
+      input[type="range"] {
+        width: 100%;
+        max-width: 300px;
+      }
+      button {
+        width: 100%;
+        padding: 14px 24px;
+        font-size: 1em;
+      }
+      .controls {
+        width: 100%;
+      }
+      .controls button {
+        flex: 1;
+        min-width: 80px;
+      }
+      select {
+        width: 100%;
+      }
+    }
+
+    /* Touch-friendly sizing */
+    @media (hover: none) and (pointer: coarse) {
+      button {
+        min-height: 44px;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        width: 24px;
+        height: 24px;
+      }
+      input[type="range"]::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+      }
+    }
   </style>
 </head>
 <body>
