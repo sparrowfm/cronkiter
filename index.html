@@ -90,12 +90,25 @@
       font-weight: 500;
       color: #475569;
       font-size: 0.9em;
+      white-space: nowrap;
     }
     .row {
       display: flex;
-      gap: 16px;
+      gap: 20px;
       align-items: center;
       flex-wrap: wrap;
+      margin-bottom: 4px;
+    }
+    .slider-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 280px;
+    }
+    .slider-group label {
+      margin: 0;
+      min-width: 110px;
     }
     select {
       padding: 10px 16px;
@@ -243,14 +256,20 @@
       .row {
         flex-direction: column;
         align-items: flex-start;
-        gap: 8px;
+        gap: 12px;
       }
-      .row label {
-        margin: 8px 0 4px 0;
-      }
-      input[type="range"] {
+      .slider-group {
         width: 100%;
-        max-width: 300px;
+        min-width: unset;
+      }
+      .slider-group label {
+        min-width: unset;
+        width: 100%;
+        margin-bottom: 4px;
+      }
+      .slider-group input[type="range"] {
+        width: 100%;
+        max-width: none;
       }
       button {
         width: 100%;
@@ -314,34 +333,45 @@
     </div>
 
     <div class="row" style="margin-top:10px">
-      <label style="margin-right:8px">Echo delay (ms)</label>
-      <input id="delayMs" type="range" min="20" max="140" step="1" value="20" />
-      <span id="delayLabel">20</span>
-
-      <label style="margin-left:24px;margin-right:8px">Echo wet mix</label>
-      <input id="wet" type="range" min="0" max="1" step="0.01" value="0.00" />
-      <span id="wetLabel">0.00</span>
-
-      <label style="margin-left:24px;margin-right:8px">Feedback</label>
-      <input id="fb" type="range" min="0" max="0.9" step="0.01" value="0.00" />
-      <span id="fbLabel">0.00</span>
+      <div class="slider-group">
+        <label>Echo delay (ms)</label>
+        <input id="delayMs" type="range" min="20" max="140" step="1" value="20" />
+        <span id="delayLabel">20</span>
+      </div>
+      <div class="slider-group">
+        <label>Echo wet mix</label>
+        <input id="wet" type="range" min="0" max="1" step="0.01" value="0.00" />
+        <span id="wetLabel">0.00</span>
+      </div>
     </div>
 
-    <div class="row" style="margin-top:10px">
-      <label style="margin-right:8px">High-pass (Hz)</label>
-      <input id="hp" type="range" min="20" max="800" step="10" value="20" />
-      <span id="hpLabel">20</span>
-
-      <label style="margin-left:24px;margin-right:8px">Low-pass (Hz)</label>
-      <input id="lp" type="range" min="1000" max="8000" step="50" value="8000" />
-      <span id="lpLabel">8000</span>
+    <div class="row">
+      <div class="slider-group">
+        <label>Feedback</label>
+        <input id="fb" type="range" min="0" max="0.9" step="0.01" value="0.00" />
+        <span id="fbLabel">0.00</span>
+      </div>
+      <div class="slider-group">
+        <label>High-pass (Hz)</label>
+        <input id="hp" type="range" min="20" max="800" step="10" value="20" />
+        <span id="hpLabel">20</span>
+      </div>
     </div>
 
-    <div class="row" style="margin-top:10px">
-      <label style="margin-right:8px">Hiss level</label>
-      <input id="hiss" type="range" min="0" max="0.3" step="0.01" value="0.00" />
-      <span id="hissLabel">0.00</span>
-      <span class="muted">(only used by "Old TV + hiss")</span>
+    <div class="row">
+      <div class="slider-group">
+        <label>Low-pass (Hz)</label>
+        <input id="lp" type="range" min="1000" max="8000" step="50" value="8000" />
+        <span id="lpLabel">8000</span>
+      </div>
+      <div class="slider-group">
+        <label>Hiss level</label>
+        <input id="hiss" type="range" min="0" max="0.3" step="0.01" value="0.00" />
+        <span id="hissLabel">0.00</span>
+      </div>
+    </div>
+    <div style="margin-top: 4px;">
+      <span class="muted" style="font-size: 0.85em;">Hiss only used by "Old TV + hiss" preset</span>
     </div>
   </fieldset>
 
@@ -427,9 +457,9 @@
     function applyPresetDefaults() {
       const p = presetEl.value;
       if (p === 'raw')      { hpEl.value=20; lpEl.value=8000; delayEl.value=20; wetEl.value=0.00; fbEl.value=0.00; hissEl.value=0.00; }
-      if (p === 'newsroom') { hpEl.value=100; lpEl.value=3500; delayEl.value=90; wetEl.value=0.15; fbEl.value=0.08; hissEl.value=0.00; }
-      if (p === 'oldtv')    { hpEl.value=300; lpEl.value=3000; delayEl.value=110; wetEl.value=0.38; fbEl.value=0.18; hissEl.value=0.00; }
-      if (p === 'oldtv_hiss'){hpEl.value=300; lpEl.value=3000; delayEl.value=110; wetEl.value=0.38; fbEl.value=0.18; hissEl.value=0.10; }
+      if (p === 'newsroom') { hpEl.value=100; lpEl.value=5000; delayEl.value=80; wetEl.value=0.30; fbEl.value=0.05; hissEl.value=0.00; }
+      if (p === 'oldtv')    { hpEl.value=300; lpEl.value=3000; delayEl.value=110; wetEl.value=0.32; fbEl.value=0.12; hissEl.value=0.00; }
+      if (p === 'oldtv_hiss'){hpEl.value=300; lpEl.value=3000; delayEl.value=110; wetEl.value=0.32; fbEl.value=0.12; hissEl.value=0.04; }
       [delayEl,wetEl,fbEl,hpEl,lpEl,hissEl].forEach(inp=>{
         const labelId = labelMap[inp.id];
         labels[labelId].textContent = inp.value;
@@ -439,8 +469,12 @@
     applyPresetDefaults();
 
     // Load sample audio
-    document.getElementById('loadSampleBtn').addEventListener('click', async () => {
+    document.getElementById('loadSampleBtn').addEventListener('click', async (e) => {
+      const btn = e.target;
+      const originalText = btn.textContent;
       try {
+        btn.textContent = 'Loading...';
+        btn.disabled = true;
         const response = await fetch('sample.mp3');
         const arrayBuffer = await response.arrayBuffer();
         audioCtx?.close();
@@ -448,14 +482,22 @@
         srcBuffer = await audioCtx.decodeAudioData(arrayBuffer);
         document.getElementById('previewBtn').disabled = false;
         document.getElementById('renderBtn').disabled = false;
-        // Update file input to show sample loaded
-        const fileInput = document.getElementById('file');
-        const dt = new DataTransfer();
-        fileInput.files = dt.files; // Clear file input visually
-        console.log('Sample audio loaded successfully');
+        btn.textContent = '✓ Sample Loaded';
+        btn.style.background = '#059669';
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.textContent = originalText;
+          btn.style.background = '#10b981';
+        }, 2000);
       } catch (error) {
         console.error('Failed to load sample audio:', error);
-        alert('Failed to load sample audio. Please try uploading a file instead.');
+        btn.textContent = '✗ Load Failed';
+        btn.style.background = '#ef4444';
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.textContent = originalText;
+          btn.style.background = '#10b981';
+        }, 2000);
       }
     });
 
