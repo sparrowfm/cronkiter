@@ -475,11 +475,32 @@
       try {
         btn.textContent = 'Loading...';
         btn.disabled = true;
+
+        // Create AudioContext on user gesture for mobile Safari
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          console.log('Created new AudioContext, state:', audioCtx.state);
+        } else {
+          audioCtx.close();
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          console.log('Recreated AudioContext, state:', audioCtx.state);
+        }
+
+        // Resume immediately on mobile Safari
+        if (audioCtx.state === 'suspended') {
+          await audioCtx.resume();
+          console.log('Resumed AudioContext during load, new state:', audioCtx.state);
+        }
+
         const response = await fetch('sample.mp3');
+        if (!response.ok) throw new Error('Failed to fetch audio');
+
         const arrayBuffer = await response.arrayBuffer();
-        audioCtx?.close();
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        console.log('Fetched audio buffer, size:', arrayBuffer.byteLength);
+
         srcBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+        console.log('Decoded audio, duration:', srcBuffer.duration, 'channels:', srcBuffer.numberOfChannels);
+
         document.getElementById('previewBtn').disabled = false;
         document.getElementById('renderBtn').disabled = false;
         btn.textContent = '✓ Sample Loaded';
@@ -491,6 +512,7 @@
         }, 2000);
       } catch (error) {
         console.error('Failed to load sample audio:', error);
+        alert('Error loading sample: ' + error.message);
         btn.textContent = '✗ Load Failed';
         btn.style.background = '#ef4444';
         setTimeout(() => {
@@ -581,29 +603,44 @@
     }
 
     async function startPreview() {
-      if (!audioCtx || !srcBuffer) return;
-
-      // Resume AudioContext for mobile Safari
-      console.log('AudioContext state before resume:', audioCtx.state);
-      if (audioCtx.state === 'suspended') {
-        await audioCtx.resume();
-        console.log('AudioContext resumed, new state:', audioCtx.state);
+      if (!audioCtx || !srcBuffer) {
+        console.error('Cannot start preview: audioCtx or srcBuffer missing');
+        alert('Please load audio first');
+        return;
       }
 
-      stopPreview();
-      const params = currentParams();
-      const graph = buildGraph(audioCtx, srcBuffer, params);
-      graph.out.connect(audioCtx.destination);
-      graph.src.start();
-      if (graph.hissSrc) graph.hissSrc.start();
-      previewNodes = graph.nodes;
-      stopPreviewFn = () => {
-        try { graph.src.stop(); } catch(_) {}
-        try { graph.hissSrc && graph.hissSrc.stop(); } catch(_) {}
-        previewNodes.forEach(n => { try { n.disconnect(); } catch(_) {} });
-        previewNodes = []; stopPreviewFn = null;
-      };
-      document.getElementById('stopBtn').disabled = false;
+      try {
+        // Resume AudioContext for mobile Safari
+        console.log('AudioContext state before resume:', audioCtx.state);
+        if (audioCtx.state === 'suspended') {
+          await audioCtx.resume();
+          console.log('AudioContext resumed, new state:', audioCtx.state);
+        }
+
+        stopPreview();
+        const params = currentParams();
+        console.log('Building graph with params:', params);
+
+        const graph = buildGraph(audioCtx, srcBuffer, params);
+        graph.out.connect(audioCtx.destination);
+
+        console.log('Starting audio playback...');
+        graph.src.start();
+        if (graph.hissSrc) graph.hissSrc.start();
+
+        previewNodes = graph.nodes;
+        stopPreviewFn = () => {
+          try { graph.src.stop(); } catch(e) { console.log('Error stopping src:', e); }
+          try { graph.hissSrc && graph.hissSrc.stop(); } catch(e) { console.log('Error stopping hiss:', e); }
+          previewNodes.forEach(n => { try { n.disconnect(); } catch(_) {} });
+          previewNodes = []; stopPreviewFn = null;
+        };
+        document.getElementById('stopBtn').disabled = false;
+        console.log('Preview started successfully');
+      } catch (error) {
+        console.error('Error in startPreview:', error);
+        alert('Error playing audio: ' + error.message);
+      }
     }
 
     function stopPreview(){
